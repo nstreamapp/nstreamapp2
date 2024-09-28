@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "decrypt.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "rabbit.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/decrypt.ts" }
+  ],
+  "outputDirectory": "nstream"
+}
