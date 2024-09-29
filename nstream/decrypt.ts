@@ -1,36 +1,27 @@
-import { Handler } from "@netlify/functions";
-import { main } from "./rabbit";
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { main } from './rabbit';
 
-const handler: Handler = async (event, context) => {
-  const mediaId = event.queryStringParameters?.id;
+// Vercel handler function
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const mediaId = req.query.id as string;
 
   if (!mediaId) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: "Missing id parameter" }),
-    };
+    return res.status(400).json({ error: 'Missing id parameter' });
   }
 
   try {
-    const provider = "rabbit";
+    const provider = 'rabbit';
     const result = await main(provider, mediaId);
-    //console.log("result from index: ", result);
-    return {
-      statusCode: 200,
-      body: JSON.stringify(result),
-    };
+
+    // Send back the result as a response
+    return res.status(200).json(result);
   } catch (error) {
     console.error(error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Internal server error" }),
-    };
+    return res.status(500).json({ error: 'Internal server error' });
   }
-};
-
-async function decrypt(source: string) {
-  // Await the async function call
-  return await main(source);
 }
 
-export { handler };
+// Optional: Async decrypt function, though you might not need it if it's only used internally
+async function decrypt(source: string) {
+  return await main(source);
+}
